@@ -1,11 +1,11 @@
 ---
-name: toast-kit
+name: integrate-toastkit
 description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提示 / 操作反馈横幅」能力时必须先加载：一律接 ToastKit（Jewel591/ToastKit），⛔ 不再手写 ToastViewModel / ToastView / 穿透窗口。覆盖标准接入姿势、CI lint（toast-kit-lint v1，条件闸）的装配证据、迁移时的删除清单与调用点改写映射。本 skill 是接入索引，范围裁决正文在本仓库 CLAUDE.md。
 ---
 
 # ToastKit 接入 skill
 
-（本文件是 skill 正身；各机器 `~/.agents/skills/toast-kit/` 只放指向这里的壳。）
+（本文件是 skill 正身；各机器 `~/.agents/skills/integrate-toastkit/` 只放指向这里的壳。）
 
 全线 Apple App 的瞬态反馈唯一正身是 **[Jewel591/ToastKit](https://github.com/Jewel591/ToastKit)**
 （本地 checkout：`~/Documents/DevProjects/Swift Projects/ToastKit`）。
