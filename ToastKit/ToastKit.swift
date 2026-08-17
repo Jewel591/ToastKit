@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import SwiftUI
 import Observation
+import SwiftUI
 
 // MARK: - Toast 数据模型
 
@@ -156,19 +156,19 @@ public struct WSToastView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 28, height: 28)
-                        // .foregroundColor(toast.type.iconColor)
+                    // .foregroundColor(toast.type.iconColor)
                 } else if let role = toast.role {
                     Image(systemName: role.iconName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 28, height: 28)
-                        // .foregroundColor(role.iconColor)
+                    // .foregroundColor(role.iconColor)
                 } else {
                     Image(systemName: toast.type.iconName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 28, height: 28)
-                        // .foregroundColor(toast.type.iconColor)
+                    // .foregroundColor(toast.type.iconColor)
                 }
             }
 
@@ -254,7 +254,7 @@ public func showToast(
     subtitle: String? = nil,
     type: WSToastType = .success,
     role: WSToastRole? = nil,
-    showIcon: Bool = true,
+    showIcon: Bool = false,
     duration: TimeInterval = 3.0
 ) {
     // 创建异步任务在主线程上执行
@@ -269,4 +269,3 @@ public func showToast(
         )
     }
 }
-
