@@ -26,6 +26,11 @@ public final class ToastCenter {
     /// globally.
     public static let defaultDuration: TimeInterval = 2.0
 
+    /// At most this many toasts are visible at once; when a new one arrives
+    /// at the cap, the oldest yields immediately. Bursts (e.g. a batch import
+    /// failing item by item) must never wallpaper the screen.
+    static let maximumVisibleToasts = 3
+
     static let houseAnimation = Animation.spring(response: 0.5, dampingFraction: 0.8)
 
     private var dismissTasks: [UUID: Task<Void, Never>] = [:]
@@ -50,6 +55,10 @@ public final class ToastCenter {
             duration: duration
         )
         withAnimation(Self.houseAnimation) {
+            while toasts.count >= Self.maximumVisibleToasts {
+                let oldest = toasts.removeFirst()
+                dismissTasks.removeValue(forKey: oldest.id)?.cancel()
+            }
             toasts.append(item)
         }
         announceForAccessibility(item)

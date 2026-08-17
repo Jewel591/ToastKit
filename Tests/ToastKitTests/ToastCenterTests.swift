@@ -36,15 +36,24 @@ struct ToastCenterTests {
         #expect(ToastCenter.defaultDuration == 2.0)
     }
 
-    @Test func convenienceMethodsMapToTheirStyles() {
+    @Test(arguments: [
+        (ToastStyle.success, "success"),
+        (ToastStyle.error, "error"),
+        (ToastStyle.warning, "warning"),
+        (ToastStyle.info, "info"),
+    ])
+    func convenienceMethodsMapToTheirStyles(style: ToastStyle, name: String) {
         let center = ToastCenter()
 
-        center.showSuccess(title: "a")
-        center.showError(title: "b")
-        center.showWarning(title: "c")
-        center.showInfo(title: "d")
+        switch style {
+        case .success: center.showSuccess(title: name)
+        case .error: center.showError(title: name)
+        case .warning: center.showWarning(title: name)
+        case .info: center.showInfo(title: name)
+        }
 
-        #expect(center.toasts.map(\.style) == [.success, .error, .warning, .info])
+        #expect(center.toasts.map(\.style) == [style])
+        #expect(center.toasts.map(\.title) == [name])
     }
 
     @Test func toastsStackInPresentationOrder() {
@@ -67,6 +76,30 @@ struct ToastCenterTests {
             try await Task.sleep(for: .milliseconds(10))
         }
         #expect(center.toasts.isEmpty)
+    }
+
+    @Test func burstIsCappedAndOldestYieldsFirst() {
+        let center = ToastCenter()
+
+        for index in 1...5 {
+            center.show(title: "toast-\(index)", duration: 60)
+        }
+
+        #expect(center.toasts.map(\.title) == ["toast-3", "toast-4", "toast-5"])
+    }
+
+    @Test func evictedToastTimerCannotSweepLaterToasts() async throws {
+        let center = ToastCenter()
+
+        // The first toast's short timer is cancelled when it is evicted by
+        // the burst; it must not fire later and remove anything.
+        center.show(title: "short-lived", duration: 0.05)
+        for index in 1...3 {
+            center.show(title: "toast-\(index)", duration: 60)
+        }
+        try await Task.sleep(for: .milliseconds(200))
+
+        #expect(center.toasts.map(\.title) == ["toast-1", "toast-2", "toast-3"])
     }
 
     @Test func dismissAllRemovesEverythingImmediately() {

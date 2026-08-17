@@ -3,8 +3,9 @@ import SwiftUI
 /// Shared layout constants for the toast layer.
 enum ToastLayout {
     /// House-standard distance from the top safe area to the first toast.
-    /// Matches the production placement shipped in MONO / CodeCat / Filmo.
-    static let topPadding: CGFloat = 50
+    /// Mirrors the system's own transient indicators (AirPods, silent mode),
+    /// which sit directly below the status bar.
+    static let topPadding: CGFloat = 8
 }
 
 /// Installs the toast presentation surface.

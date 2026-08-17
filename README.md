@@ -59,6 +59,9 @@ itself contains no user-visible strings.
 - **Zero config.** Style (`success` / `error` / `warning` / `info`), symbol,
   colors, placement, animation, and the 2-second default duration are kit-level
   decisions. Hosts provide text and pick a semantic style, nothing else.
+- **Burst-safe.** At most three toasts are visible at once; when a fourth
+  arrives, the oldest yields immediately. A batch operation failing item by
+  item can never wallpaper the screen.
 - **Renders above sheets (iOS).** Toasts live in a dedicated touch-transparent
   `UIWindow` above the alert level, one per `UIWindowScene` (iPad multi-window
   and Stage Manager safe), mirroring the host's effective color scheme. macOS
