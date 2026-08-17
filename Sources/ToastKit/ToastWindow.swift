@@ -33,7 +33,7 @@ final class ToastWindowManager {
             return
         }
 
-        let host = UIHostingController(rootView: ToastWindowRoot())
+        let host = UIHostingController(rootView: ToastWindowRoot(sceneStamp: key))
         host.view.backgroundColor = .clear
 
         let window = PassthroughWindow(windowScene: scene)
@@ -75,8 +75,10 @@ final class ToastWindowManager {
 }
 
 private struct ToastWindowRoot: View {
+    let sceneStamp: ObjectIdentifier
+
     var body: some View {
-        ToastContainerView()
+        ToastContainerView(sceneStamp: sceneStamp)
             .padding(.top, ToastLayout.topPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }

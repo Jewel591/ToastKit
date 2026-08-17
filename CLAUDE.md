@@ -27,6 +27,15 @@
    SwiftData model 的身份相等吞通知（#316）。但新增对外状态时仍要过一遍该判据。
 7. **每个 toast 发 VoiceOver announcement**：toast 瞬态且不可交互，
    不播报 VoiceOver 用户会完全错过。
+8. **scene 归属只在无歧义时判定**（恰好一个 foregroundActive scene 才 stamp）。
+   iPad 多前台窗口下没有可靠的 App 级信号能反推「这次 show 来自哪个窗口」
+   （key window 是 per-scene 的），⛔ 不要按 keyWindow / 首个匹配去猜——
+   猜错是把反馈显示到错误窗口，fail-open（nil = 处处显示）最坏只是重复显示。
+   同屏上限（3 条）是**逐屏不变量**：一块屏幕的可见集 = 本 scene 组 + nil 广播组，
+   驱逐按新 toast 落到的每块屏幕的可见集执行——既不允许混组后单屏超过 3 条，
+   也不允许一个 scene 的爆发驱逐另一个 scene 的反馈。
+9. **`dismissAll()` 是进程级操作**（登出、账号切换等 App 级重置用），
+   有意不做 per-scene 版本——需要时再加，⛔ 不要预防性实现。
 
 ## CI 契约
 

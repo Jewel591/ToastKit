@@ -41,7 +41,11 @@ struct ToastView: View {
                 .fill(backgroundColor)
                 .shadow(radius: 8, y: 2)
         )
-        .fixedSize(horizontal: true, vertical: false)
+        // No `.fixedSize(horizontal: true)` here: it would let long localized
+        // text adopt its ideal width and blow straight past the cap (the
+        // outer frame only reports a smaller size, it does not clip). Without
+        // it the capsule still hugs short content, and long single-line text
+        // truncates with an ellipsis inside the cap.
         .frame(maxWidth: 300)
         .transition(.asymmetric(
             insertion: .move(edge: .top).combined(with: .opacity),

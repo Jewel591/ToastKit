@@ -12,17 +12,26 @@ public struct ToastItem: Identifiable, Equatable, Sendable {
     public let style: ToastStyle
     public let duration: TimeInterval
 
+    /// The scene that was frontmost when the toast was shown (iOS). A toast
+    /// belongs to the window whose action produced it; without this stamp,
+    /// iPad multi-window / Stage Manager would mirror every toast into every
+    /// scene. `nil` means "no single owner could be determined — show
+    /// everywhere rather than nowhere".
+    let sceneStamp: ObjectIdentifier?
+
     init(
         title: String,
         subtitle: String?,
         style: ToastStyle,
-        duration: TimeInterval
+        duration: TimeInterval,
+        sceneStamp: ObjectIdentifier?
     ) {
         self.id = UUID()
         self.title = title
         self.subtitle = subtitle
         self.style = style
         self.duration = duration
+        self.sceneStamp = sceneStamp
     }
 }
 

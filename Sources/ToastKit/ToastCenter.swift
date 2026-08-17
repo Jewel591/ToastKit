@@ -1,5 +1,8 @@
 import Observation
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// The single entry point for showing transient feedback.
 ///
@@ -35,9 +38,21 @@ public final class ToastCenter {
 
     private var dismissTasks: [UUID: Task<Void, Never>] = [:]
 
+    /// The suspension primitive behind auto-dismissal. Injectable so tests
+    /// can prove the real contract — "stays visible until the duration
+    /// elapses, and eviction / dismissAll actually cancel the pending work" —
+    /// instead of racing wall-clock sleeps.
+    private let sleep: @Sendable (TimeInterval) async throws -> Void
+
     // Internal so tests can build isolated instances; production code goes
     // through `shared` only.
-    init() {}
+    init(
+        sleep: @escaping @Sendable (TimeInterval) async throws -> Void = {
+            try await Task.sleep(for: .seconds($0))
+        }
+    ) {
+        self.sleep = sleep
+    }
 
     // MARK: - Showing
 
@@ -48,21 +63,82 @@ public final class ToastCenter {
         style: ToastStyle = .info,
         duration: TimeInterval = ToastCenter.defaultDuration
     ) {
-        let item = ToastItem(
+        insert(ToastItem(
             title: title,
             subtitle: normalized(subtitle),
             style: style,
-            duration: duration
-        )
+            duration: duration,
+            sceneStamp: Self.currentSceneStamp()
+        ))
+    }
+
+    /// Internal seam so tests can exercise eviction with explicit scene
+    /// stamps; the public `show` family always stamps with the current scene.
+    func insert(_ item: ToastItem) {
         withAnimation(Self.houseAnimation) {
-            while toasts.count >= Self.maximumVisibleToasts {
-                let oldest = toasts.removeFirst()
-                dismissTasks.removeValue(forKey: oldest.id)?.cancel()
-            }
+            evictUntilEverySurfaceHasRoom(for: item)
             toasts.append(item)
         }
         announceForAccessibility(item)
         scheduleDismiss(of: item)
+    }
+
+    /// The cap is a per-screen invariant: a screen renders its own scene's
+    /// toasts plus every broadcast (`sceneStamp == nil`) toast, so eviction
+    /// must count that visible union — not just the exact-stamp group —
+    /// while still never touching a screen the new item does not appear on.
+    ///
+    /// Victim selection is deterministic and minimal: the toast visible on
+    /// the most overloaded screens yields first (a shared broadcast can free
+    /// several screens in one step), ties broken by queue order (oldest
+    /// first). No step of it depends on `Set` iteration order.
+    private func evictUntilEverySurfaceHasRoom(for item: ToastItem) {
+        while true {
+            let overloaded = overloadedSurfaces(for: item)
+            guard !overloaded.isEmpty else { return }
+            var coverage: [UUID: Int] = [:]
+            for surface in overloaded {
+                for toast in surface {
+                    coverage[toast.id, default: 0] += 1
+                }
+            }
+            let widestCoverage = coverage.values.max() ?? 0
+            guard let victim = toasts.first(where: {
+                coverage[$0.id] == widestCoverage
+            }) else { return }
+            toasts.removeAll { $0.id == victim.id }
+            dismissTasks.removeValue(forKey: victim.id)?.cancel()
+        }
+    }
+
+    /// The visible sets, among the screens the new item will land on, that
+    /// are already at the cap.
+    private func overloadedSurfaces(for item: ToastItem) -> [[ToastItem]] {
+        let surfaces: [[ToastItem]]
+        if let stamp = item.sceneStamp {
+            surfaces = [toasts.filter {
+                $0.sceneStamp == stamp || $0.sceneStamp == nil
+            }]
+        } else {
+            // A broadcast lands on every screen: each known scene group
+            // (plus a screen with no scene-owned toasts) must have room.
+            var seen = Set<ObjectIdentifier>()
+            var groups: [ObjectIdentifier] = []
+            for stamp in toasts.compactMap(\.sceneStamp)
+            where seen.insert(stamp).inserted {
+                groups.append(stamp)
+            }
+            if groups.isEmpty {
+                surfaces = [toasts.filter { $0.sceneStamp == nil }]
+            } else {
+                surfaces = groups.map { group in
+                    toasts.filter {
+                        $0.sceneStamp == group || $0.sceneStamp == nil
+                    }
+                }
+            }
+        }
+        return surfaces.filter { $0.count >= Self.maximumVisibleToasts }
     }
 
     /// Shows a toast with strings localized in the host's catalog.
@@ -128,8 +204,8 @@ public final class ToastCenter {
     }
 
     private func scheduleDismiss(of item: ToastItem) {
-        dismissTasks[item.id] = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(item.duration))
+        dismissTasks[item.id] = Task { [weak self, sleep] in
+            try? await sleep(item.duration)
             guard !Task.isCancelled else { return }
             self?.dismiss(id: item.id)
         }
@@ -140,6 +216,40 @@ public final class ToastCenter {
         withAnimation(Self.houseAnimation) {
             toasts.removeAll { $0.id == id }
         }
+    }
+
+    // MARK: - Scene ownership
+
+    /// Which toasts a given presentation surface should render. A stamped
+    /// toast shows only in its owning scene; an unstamped toast (ownership
+    /// unknown, or macOS overlay) shows everywhere.
+    static func visibleToasts(
+        _ toasts: [ToastItem],
+        in sceneStamp: ObjectIdentifier?
+    ) -> [ToastItem] {
+        guard let sceneStamp else { return toasts }
+        return toasts.filter { $0.sceneStamp == nil || $0.sceneStamp == sceneStamp }
+    }
+
+    /// Stamps a new toast with the scene the user is acting in.
+    ///
+    /// Ownership is only claimed when it is unambiguous: exactly one
+    /// foreground-active scene. With several foreground scenes (iPad
+    /// side-by-side / Stage Manager) there is no reliable app-level signal
+    /// for "which scene triggered this call" — each scene has its own key
+    /// window — so guessing would misattribute feedback. Failing open
+    /// (`nil` = show everywhere) duplicates a toast at worst; guessing wrong
+    /// shows it only in the wrong window.
+    private static func currentSceneStamp() -> ObjectIdentifier? {
+        #if canImport(UIKit)
+        let scenes = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .filter { $0.activationState == .foregroundActive }
+        if scenes.count == 1 { return ObjectIdentifier(scenes[0]) }
+        return nil
+        #else
+        return nil
+        #endif
     }
 
     // MARK: - Helpers

@@ -38,8 +38,11 @@ public struct ToastHostModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .overlay(alignment: .top) {
-                ToastContainerView()
+                // Non-interactive by contract: the overlay must never steal
+                // clicks from the content beneath it.
+                ToastContainerView(sceneStamp: nil)
                     .padding(.top, ToastLayout.topPadding)
+                    .allowsHitTesting(false)
             }
     }
     #endif
