@@ -39,7 +39,6 @@ struct ToastView: View {
         .background(
             Capsule()
                 .fill(backgroundColor)
-                .shadow(radius: 8, y: 2)
         )
         // No `.fixedSize(horizontal: true)` here: it would let long localized
         // text adopt its ideal width and blow straight past the cap (the
@@ -53,4 +52,121 @@ struct ToastView: View {
         ))
         .accessibilityElement(children: .combine)
     }
+}
+
+private func previewToast(
+    _ title: String,
+    subtitle: String? = nil,
+    style: ToastStyle
+) -> ToastItem {
+    ToastItem(
+        title: title,
+        subtitle: subtitle,
+        style: style,
+        duration: 2,
+        sceneStamp: nil
+    )
+}
+
+private struct ToastPreviewScreen: View {
+    let items: [ToastItem]
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(items) { item in
+                ToastView(item: item)
+            }
+        }
+        .padding(.top, 60)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background {
+            #if canImport(UIKit)
+            Color(uiColor: .systemGroupedBackground)
+            #else
+            Color(nsColor: .windowBackgroundColor)
+            #endif
+        }
+    }
+}
+
+#Preview("Success") {
+    ToastPreviewScreen(items: [
+        previewToast("Saved", style: .success),
+    ])
+}
+
+#Preview("Error") {
+    ToastPreviewScreen(items: [
+        previewToast(
+            "Export failed",
+            subtitle: "Check storage space",
+            style: .error
+        ),
+    ])
+}
+
+#Preview("Warning") {
+    ToastPreviewScreen(items: [
+        previewToast(
+            "免费 AI 识别额度已用完",
+            subtitle: "升级后可无限使用",
+            style: .warning
+        ),
+    ])
+}
+
+#Preview("Info") {
+    ToastPreviewScreen(items: [
+        previewToast(
+            "Signed in",
+            subtitle: "Syncing your library",
+            style: .info
+        ),
+    ])
+}
+
+#Preview("All styles") {
+    ToastPreviewScreen(items: [
+        previewToast("Saved", style: .success),
+        previewToast(
+            "Export failed",
+            subtitle: "Check storage space",
+            style: .error
+        ),
+        previewToast(
+            "免费 AI 识别额度已用完",
+            subtitle: "升级后可无限使用",
+            style: .warning
+        ),
+        previewToast(
+            "Signed in",
+            subtitle: "Syncing your library",
+            style: .info
+        ),
+    ])
+}
+
+#Preview("Title only") {
+    ToastPreviewScreen(items: [
+        previewToast("Saved", style: .success),
+        previewToast("Export failed", style: .error),
+        previewToast("Quota used up", style: .warning),
+        previewToast("Copied", style: .info),
+    ])
+}
+
+#Preview("Stack of 3") {
+    ToastPreviewScreen(items: [
+        previewToast("Saved", style: .success),
+        previewToast(
+            "Export failed",
+            subtitle: "Check storage space",
+            style: .error
+        ),
+        previewToast(
+            "免费 AI 识别额度已用完",
+            subtitle: "升级后可无限使用",
+            style: .warning
+        ),
+    ])
 }
