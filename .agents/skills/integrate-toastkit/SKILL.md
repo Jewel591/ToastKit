@@ -1,6 +1,6 @@
 ---
 name: integrate-toastkit
-description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提示 / 操作反馈横幅」能力时必须先加载：一律接 ToastKit（Jewel591/ToastKit），⛔ 不再手写 ToastViewModel / ToastView / 穿透窗口。覆盖标准接入姿势、CI lint（toast-kit-lint v1，条件闸）的装配证据、迁移时的删除清单与调用点改写映射。本 skill 是接入索引，范围裁决正文在本仓库 CLAUDE.md。
+description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提示 / 操作反馈横幅」能力时必须先加载：一律接 ToastKit（Jewel591/ToastKit），⛔ 不再手写 ToastViewModel / ToastView / 穿透窗口。覆盖标准接入姿势、CI lint（toast-kit-lint v1，条件闸）的装配证据、迁移时的删除清单与调用点改写映射。本 skill 是接入索引，范围裁决正文在本仓库 AGENTS.md。
 ---
 
 # ToastKit 接入 skill
@@ -9,7 +9,7 @@ description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提
 
 全线 Apple App 的瞬态反馈唯一正身是 **[Jewel591/ToastKit](https://github.com/Jewel591/ToastKit)**
 （本地 checkout：`~/Documents/DevProjects/Swift Projects/ToastKit`）。
-范围裁决与不变式读 kit 仓库 `CLAUDE.md`，用法读 `README.md`——本文件不复制正文。
+范围裁决与不变式读 kit 仓库 `AGENTS.md`（`CLAUDE.md` 是兼容符号链接），用法读 `README.md`——本文件不复制正文。
 
 ## 何时触发
 
