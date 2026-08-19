@@ -14,28 +14,21 @@ struct ToastView: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 8) {
-            Image(systemName: item.style.iconName)
-                .font(.system(.title2, weight: .medium))
+        VStack(alignment: .center, spacing: 1) {
+            Text(item.title)
+                .font(.system(.subheadline, weight: .bold))
                 .foregroundStyle(.primary)
-                .frame(height: 32)
+                .lineLimit(1)
 
-            VStack(alignment: .center, spacing: 1) {
-                Text(item.title)
-                    .font(.system(.subheadline, weight: .bold))
-                    .foregroundStyle(.primary)
+            if let subtitle = item.subtitle {
+                Text(subtitle)
+                    .font(.system(.caption))
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
-
-                if let subtitle = item.subtitle {
-                    Text(subtitle)
-                        .font(.system(.caption))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
         .background(
             Capsule()
                 .fill(backgroundColor)

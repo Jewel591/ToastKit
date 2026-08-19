@@ -56,9 +56,10 @@ itself contains no user-visible strings.
 
 ## Design
 
-- **Zero config.** Style (`success` / `error` / `warning` / `info`), symbol,
-  colors, placement, animation, and the 2-second default duration are kit-level
+- **Zero config.** Style (`success` / `error` / `warning` / `info`), colors,
+  placement, animation, and the 2-second default duration are kit-level
   decisions. Hosts provide text and pick a semantic style, nothing else.
+  Toasts are text-only; style is not drawn as an icon.
 - **Burst-safe.** At most three toasts are visible at once; when a fourth
   arrives, the oldest yields immediately. A batch operation failing item by
   item can never wallpaper the screen.
@@ -71,8 +72,8 @@ itself contains no user-visible strings.
   in an alert or sheet.
 - **Accessible.** Each toast posts a VoiceOver announcement; the transient
   visual alone would be missed entirely.
-- **System-preset visuals.** Dynamic Type text styles, semantic colors, SF
-  Symbols — no hard-coded hex values or fixed point sizes.
+- **System-preset visuals.** Dynamic Type text styles and semantic colors —
+  no hard-coded hex values or fixed point sizes.
 
 ## Testing
 

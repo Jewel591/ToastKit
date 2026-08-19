@@ -35,20 +35,11 @@ public struct ToastItem: Identifiable, Equatable, Sendable {
     }
 }
 
-/// The semantic category of a toast. Iconography is a kit-level decision;
-/// hosts pick a style, never a symbol.
+/// The semantic category of a toast. Hosts pick a style; the capsule itself
+/// is text-only and does not draw an icon.
 public enum ToastStyle: Equatable, Sendable {
     case success
     case error
     case warning
     case info
-
-    var iconName: String {
-        switch self {
-        case .success: "checkmark.circle.fill"
-        case .error: "xmark.circle.fill"
-        case .warning: "exclamationmark.triangle.fill"
-        case .info: "info.circle.fill"
-        }
-    }
 }
