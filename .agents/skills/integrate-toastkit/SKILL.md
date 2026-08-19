@@ -35,6 +35,7 @@ description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提
 4. toast 不可交互是契约：需要用户决策的内容走 alert / sheet
    （经宿主 SheetCoordinator / SurfaceCoordinatorKit 仲裁），⛔ 不给 toast 加按钮。
 5. 零配置是不变式：⛔ 不加主题 / 位置 / 动画 / 上限配置参数；
-   唯一逐调用点自由度是 `duration`（默认 2s，长文案可加长）。
+   逐调用点自由度只有 `duration`（默认 2s，长文案可加长）和 `showsIcon`
+   （默认不画 icon）。
 6. kit 内无用户可见字符串：文案由宿主传 `String` 或 `LocalizedStringResource`，
    本地化在宿主 catalog 完成；⛔ 不要给 kit 仓库"补" xcstrings / l10n-manifest。

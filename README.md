@@ -48,9 +48,16 @@ ToastCenter.shared.show(
     style: .warning,
     duration: 10
 )
+
+// Icon is off by default; pass showsIcon when the style mark helps:
+ToastCenter.shared.showWarning(
+    title: "Free quota used up",
+    subtitle: "Upgrade for unlimited use",
+    showsIcon: true
+)
 ```
 
-`show(title:subtitle:style:duration:)` accepts both `String` and
+`show(title:subtitle:style:duration:showsIcon:)` accepts both `String` and
 `LocalizedStringResource`; localized text lives in the host's catalog — the kit
 itself contains no user-visible strings.
 
@@ -58,8 +65,8 @@ itself contains no user-visible strings.
 
 - **Zero config.** Style (`success` / `error` / `warning` / `info`), colors,
   placement, animation, and the 2-second default duration are kit-level
-  decisions. Hosts provide text and pick a semantic style, nothing else.
-  Toasts are text-only; style is not drawn as an icon.
+  decisions. Hosts provide text and pick a semantic style. The only
+  per-call extras are `duration` and `showsIcon` (default `false`).
 - **Burst-safe.** At most three toasts are visible at once; when a fourth
   arrives, the oldest yields immediately. A batch operation failing item by
   item can never wallpaper the screen.

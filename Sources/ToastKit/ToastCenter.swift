@@ -61,13 +61,15 @@ public final class ToastCenter {
         title: String,
         subtitle: String? = nil,
         style: ToastStyle = .info,
-        duration: TimeInterval = ToastCenter.defaultDuration
+        duration: TimeInterval = ToastCenter.defaultDuration,
+        showsIcon: Bool = false
     ) {
         insert(ToastItem(
             title: title,
             subtitle: normalized(subtitle),
             style: style,
             duration: duration,
+            showsIcon: showsIcon,
             sceneStamp: Self.currentSceneStamp()
         ))
     }
@@ -146,48 +148,82 @@ public final class ToastCenter {
         title: LocalizedStringResource,
         subtitle: LocalizedStringResource? = nil,
         style: ToastStyle = .info,
-        duration: TimeInterval = ToastCenter.defaultDuration
+        duration: TimeInterval = ToastCenter.defaultDuration,
+        showsIcon: Bool = false
     ) {
         show(
             title: String(localized: title),
             subtitle: subtitle.map { String(localized: $0) },
             style: style,
-            duration: duration
+            duration: duration,
+            showsIcon: showsIcon
         )
     }
 
     // MARK: - Convenience styles
 
-    public func showSuccess(title: String, subtitle: String? = nil) {
-        show(title: title, subtitle: subtitle, style: .success)
+    public func showSuccess(
+        title: String,
+        subtitle: String? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .success, showsIcon: showsIcon)
     }
 
-    public func showSuccess(title: LocalizedStringResource, subtitle: LocalizedStringResource? = nil) {
-        show(title: title, subtitle: subtitle, style: .success)
+    public func showSuccess(
+        title: LocalizedStringResource,
+        subtitle: LocalizedStringResource? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .success, showsIcon: showsIcon)
     }
 
-    public func showError(title: String, subtitle: String? = nil) {
-        show(title: title, subtitle: subtitle, style: .error)
+    public func showError(
+        title: String,
+        subtitle: String? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .error, showsIcon: showsIcon)
     }
 
-    public func showError(title: LocalizedStringResource, subtitle: LocalizedStringResource? = nil) {
-        show(title: title, subtitle: subtitle, style: .error)
+    public func showError(
+        title: LocalizedStringResource,
+        subtitle: LocalizedStringResource? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .error, showsIcon: showsIcon)
     }
 
-    public func showWarning(title: String, subtitle: String? = nil) {
-        show(title: title, subtitle: subtitle, style: .warning)
+    public func showWarning(
+        title: String,
+        subtitle: String? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .warning, showsIcon: showsIcon)
     }
 
-    public func showWarning(title: LocalizedStringResource, subtitle: LocalizedStringResource? = nil) {
-        show(title: title, subtitle: subtitle, style: .warning)
+    public func showWarning(
+        title: LocalizedStringResource,
+        subtitle: LocalizedStringResource? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .warning, showsIcon: showsIcon)
     }
 
-    public func showInfo(title: String, subtitle: String? = nil) {
-        show(title: title, subtitle: subtitle, style: .info)
+    public func showInfo(
+        title: String,
+        subtitle: String? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .info, showsIcon: showsIcon)
     }
 
-    public func showInfo(title: LocalizedStringResource, subtitle: LocalizedStringResource? = nil) {
-        show(title: title, subtitle: subtitle, style: .info)
+    public func showInfo(
+        title: LocalizedStringResource,
+        subtitle: LocalizedStringResource? = nil,
+        showsIcon: Bool = false
+    ) {
+        show(title: title, subtitle: subtitle, style: .info, showsIcon: showsIcon)
     }
 
     // MARK: - Dismissal

@@ -17,6 +17,7 @@ struct ToastCenterTests {
         #expect(item?.subtitle == "3 records")
         #expect(item?.style == .success)
         #expect(item?.duration == 60)
+        #expect(item?.showsIcon == false)
     }
 
     @Test func emptySubtitleIsNormalizedToNil() {
@@ -34,6 +35,25 @@ struct ToastCenterTests {
 
         #expect(center.toasts.first?.duration == 2.0)
         #expect(ToastCenter.defaultDuration == 2.0)
+    }
+
+    @Test func showOmitsIconByDefault() {
+        let center = ToastCenter()
+
+        center.show(title: "Saved", duration: 60)
+        center.showSuccess(title: "Also saved")
+
+        #expect(center.toasts.map(\.showsIcon) == [false, false])
+    }
+
+    @Test func showCanOptInToIcon() {
+        let center = ToastCenter()
+
+        center.show(title: "Saved", style: .success, duration: 60, showsIcon: true)
+        center.showWarning(title: "Quota used up", showsIcon: true)
+
+        #expect(center.toasts.map(\.showsIcon) == [true, true])
+        #expect(center.toasts.map(\.style) == [.success, .warning])
     }
 
     @Test(arguments: [
