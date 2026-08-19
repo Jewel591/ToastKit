@@ -48,17 +48,25 @@ ToastCenter.shared.show(
     style: .warning,
     duration: 10
 )
+
+// Icon is off by default; pass showsIcon when the style mark helps:
+ToastCenter.shared.showWarning(
+    title: "Free quota used up",
+    subtitle: "Upgrade for unlimited use",
+    showsIcon: true
+)
 ```
 
-`show(title:subtitle:style:duration:)` accepts both `String` and
+`show(title:subtitle:style:duration:showsIcon:)` accepts both `String` and
 `LocalizedStringResource`; localized text lives in the host's catalog — the kit
 itself contains no user-visible strings.
 
 ## Design
 
-- **Zero config.** Style (`success` / `error` / `warning` / `info`), symbol,
-  colors, placement, animation, and the 2-second default duration are kit-level
-  decisions. Hosts provide text and pick a semantic style, nothing else.
+- **Zero config.** Style (`success` / `error` / `warning` / `info`), colors,
+  placement, animation, and the 2-second default duration are kit-level
+  decisions. Hosts provide text and pick a semantic style. The only
+  per-call extras are `duration` and `showsIcon` (default `false`).
 - **Burst-safe.** At most three toasts are visible at once; when a fourth
   arrives, the oldest yields immediately. A batch operation failing item by
   item can never wallpaper the screen.
@@ -71,8 +79,8 @@ itself contains no user-visible strings.
   in an alert or sheet.
 - **Accessible.** Each toast posts a VoiceOver announcement; the transient
   visual alone would be missed entirely.
-- **System-preset visuals.** Dynamic Type text styles, semantic colors, SF
-  Symbols — no hard-coded hex values or fixed point sizes.
+- **System-preset visuals.** Dynamic Type text styles and semantic colors —
+  no hard-coded hex values or fixed point sizes.
 
 ## Testing
 

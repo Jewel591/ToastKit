@@ -11,6 +11,7 @@ public struct ToastItem: Identifiable, Equatable, Sendable {
     public let subtitle: String?
     public let style: ToastStyle
     public let duration: TimeInterval
+    public let showsIcon: Bool
 
     /// The scene that was frontmost when the toast was shown (iOS). A toast
     /// belongs to the window whose action produced it; without this stamp,
@@ -24,6 +25,7 @@ public struct ToastItem: Identifiable, Equatable, Sendable {
         subtitle: String?,
         style: ToastStyle,
         duration: TimeInterval,
+        showsIcon: Bool = false,
         sceneStamp: ObjectIdentifier?
     ) {
         self.id = UUID()
@@ -31,24 +33,16 @@ public struct ToastItem: Identifiable, Equatable, Sendable {
         self.subtitle = subtitle
         self.style = style
         self.duration = duration
+        self.showsIcon = showsIcon
         self.sceneStamp = sceneStamp
     }
 }
 
-/// The semantic category of a toast. Iconography is a kit-level decision;
-/// hosts pick a style, never a symbol.
+/// The semantic category of a toast. Hosts pick a style; an icon is drawn
+/// only when the call site opts in with `showsIcon: true`.
 public enum ToastStyle: Equatable, Sendable {
     case success
     case error
     case warning
     case info
-
-    var iconName: String {
-        switch self {
-        case .success: "checkmark.circle.fill"
-        case .error: "xmark.circle.fill"
-        case .warning: "exclamationmark.triangle.fill"
-        case .info: "info.circle.fill"
-        }
-    }
 }
