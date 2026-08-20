@@ -39,3 +39,10 @@ description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提
    （默认不画 icon）。
 6. kit 内无用户可见字符串：文案由宿主传 `String` 或 `LocalizedStringResource`，
    本地化在宿主 catalog 完成；⛔ 不要给 kit 仓库"补" xcstrings / l10n-manifest。
+
+## 宿主测试边界
+
+- 宿主只测试自己的错误/成功状态如何映射成 toast 文案与 style；纯调用点通常不需要专门的 Kit 集成测试。
+- 队列、驱逐、计时、穿透窗口、VoiceOver 播报和 `.toastHost()` 行为属于 ToastKit；不要在每个 App 重测。
+- 不在 XCTest 中扫描 `project.pbxproj`、import、`.toastHost()` 字符串或旧 toast 类型；装配和残留实现由 `toast-kit-lint` 负责。
+- 不写视觉快照。需要验证 sheet 覆盖关系时做本地定向运行验证；两个 App 若复制同一映射 helper，应把稳定语义移入 Kit。
