@@ -39,6 +39,11 @@
 9. **`dismissAll()` 是进程级操作**（登出、账号切换等 App 级重置用），
    有意不做 per-scene 版本——需要时再加，⛔ 不要预防性实现。
 
+## 本机 Xcode
+
+- ToastKit 专属模拟器：`ToastKit iPhone 17 Pro (iOS 27)`，UDID
+  `E2EA23D4-4EC6-43D6-83FC-AF21AB42C450`。
+
 ## CI 契约
 
 `product-playbook` 的 `toast-kit-lint` 以以下证据判定接入（条件闸：仓库出现
