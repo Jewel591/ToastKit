@@ -14,6 +14,20 @@ struct ToastContainerView: View {
     }
 
     var body: some View {
+        #if os(iOS)
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer(spacing: 8) {
+                toastStack
+            }
+        } else {
+            toastStack
+        }
+        #else
+        toastStack
+        #endif
+    }
+
+    private var toastStack: some View {
         VStack(spacing: 8) {
             ForEach(visibleToasts) { toast in
                 ToastView(item: toast)

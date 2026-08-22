@@ -80,7 +80,9 @@ itself contains no user-visible strings.
 - **Accessible.** Each toast posts a VoiceOver announcement; the transient
   visual alone would be missed entirely.
 - **System-preset visuals.** Dynamic Type text styles and semantic colors —
-  no hard-coded hex values or fixed point sizes.
+  no hard-coded hex values or fixed point sizes. On iOS 26 and later, toast
+  capsules use system Liquid Glass; earlier iOS versions and macOS retain the
+  semantic system background.
 
 ## Testing
 

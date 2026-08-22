@@ -5,40 +5,30 @@ import SwiftUI
 struct ToastView: View {
     let item: ToastItem
 
-    private var backgroundColor: Color {
-        #if canImport(UIKit)
-        Color(uiColor: .secondarySystemGroupedBackground)
-        #else
-        Color(nsColor: .controlBackgroundColor)
-        #endif
-    }
-
     var body: some View {
-        HStack(alignment: .center, spacing: 8) {
-            if item.showsIcon {
-                ToastStyleIcon(style: item.style)
-            }
+        ToastBackground {
+            HStack(alignment: .center, spacing: 8) {
+                if item.showsIcon {
+                    ToastStyleIcon(style: item.style)
+                }
 
-            VStack(alignment: .center, spacing: 1) {
-                Text(item.title)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-
-                if let subtitle = item.subtitle {
-                    Text(subtitle)
-                        .font(.system(.caption))
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .center, spacing: 1) {
+                    Text(item.title)
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
                         .lineLimit(1)
+
+                    if let subtitle = item.subtitle {
+                        Text(subtitle)
+                            .font(.system(.caption))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
                 }
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 8)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-        .background(
-            Capsule()
-                .fill(backgroundColor)
-        )
         // No `.fixedSize(horizontal: true)` here: it would let long localized
         // text adopt its ideal width and blow straight past the cap (the
         // outer frame only reports a smaller size, it does not clip). Without
@@ -50,6 +40,43 @@ struct ToastView: View {
             removal: .move(edge: .top).combined(with: .opacity)
         ))
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// Applies the house background while preserving the package's older platform
+/// support. Liquid Glass is an iOS-only presentation decision for now; macOS
+/// keeps its existing semantic background.
+private struct ToastBackground<Content: View>: View {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    private var legacyColor: Color {
+        #if canImport(UIKit)
+        Color(uiColor: .secondarySystemGroupedBackground)
+        #else
+        Color(nsColor: .controlBackgroundColor)
+        #endif
+    }
+
+    var body: some View {
+        #if os(iOS)
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(.regular, in: Capsule())
+        } else {
+            legacyContent
+        }
+        #else
+        legacyContent
+        #endif
+    }
+
+    private var legacyContent: some View {
+        content
+            .background(Capsule().fill(legacyColor))
     }
 }
 
