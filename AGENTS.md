@@ -1,6 +1,6 @@
 # AGENTS.md — ToastKit
 
-本仓库是全线 Apple App 的瞬态反馈（toast）正身。范围裁决与不变式记录在此；README 是使用文档。同目录 `CLAUDE.md` 是指向本文件的兼容符号链接。
+本仓库是全线 Apple App 的瞬态反馈（toast）正身。范围裁决与不变式记录在此；README 是使用文档。。
 
 ## 不变式（改动前先读）
 

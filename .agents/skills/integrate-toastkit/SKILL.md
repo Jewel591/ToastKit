@@ -9,7 +9,7 @@ description: 在任何 Apple App 里实现、迁移或排查「toast / 瞬态提
 
 全线 Apple App 的瞬态反馈唯一正身是 **[Jewel591/ToastKit](https://github.com/Jewel591/ToastKit)**
 （本地 checkout：`~/Documents/DevProjects/Swift Projects/ToastKit`）。
-范围裁决与不变式读 kit 仓库 `AGENTS.md`（`CLAUDE.md` 是兼容符号链接），用法读 `README.md`——本文件不复制正文。
+范围裁决与不变式读 kit 仓库 `AGENTS.md`（`AGENTS.md` 是兼容符号链接），用法读 `README.md`——本文件不复制正文。
 
 ## 何时触发
 
