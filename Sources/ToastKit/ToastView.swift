@@ -5,6 +5,18 @@ import SwiftUI
 struct ToastView: View {
     let item: ToastItem
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    /// 300pt at the default text size; grows with Dynamic Type. The container's
+    /// horizontal margin keeps it inside the screen.
+    @ScaledMetric(relativeTo: .subheadline) private var maxWidth: CGFloat = 300
+
+    /// Localized copy routinely needs a second line inside the width cap; a
+    /// single line truncated real guidance into half sentences.
+    /// Accessibility sizes drop the cap so short copy is never cut.
+    private var lineLimit: Int? {
+        dynamicTypeSize.isAccessibilitySize ? nil : 2
+    }
+
     var body: some View {
         ToastBackground {
             HStack(alignment: .center, spacing: 8) {
@@ -16,25 +28,26 @@ struct ToastView: View {
                     Text(item.title)
                         .font(.subheadline)
                         .foregroundStyle(.primary)
-                        .lineLimit(1)
+                        .lineLimit(lineLimit)
 
                     if let subtitle = item.subtitle {
                         Text(subtitle)
                             .font(.system(.caption))
                             .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                            .lineLimit(lineLimit)
                     }
                 }
+                .multilineTextAlignment(.center)
+                // Vertical only: lets wrapped text take its full height. A
+                // horizontal `fixedSize` would let long text adopt its ideal
+                // width and blow straight past the cap (the outer frame only
+                // reports a smaller size, it does not clip).
+                .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 8)
         }
-        // No `.fixedSize(horizontal: true)` here: it would let long localized
-        // text adopt its ideal width and blow straight past the cap (the
-        // outer frame only reports a smaller size, it does not clip). Without
-        // it the capsule still hugs short content, and long single-line text
-        // truncates with an ellipsis inside the cap.
-        .frame(maxWidth: 300)
+        .frame(maxWidth: maxWidth)
         .transition(.asymmetric(
             insertion: .move(edge: .top).combined(with: .opacity),
             removal: .move(edge: .top).combined(with: .opacity)
@@ -48,6 +61,15 @@ struct ToastView: View {
 /// keeps its existing semantic background.
 private struct ToastBackground<Content: View>: View {
     let content: Content
+
+    /// One-line toasts stay a capsule: the radius is at least half their
+    /// height, and `RoundedRectangle` clamps it to exactly that. Wrapped toasts
+    /// keep this corner instead of growing round ends that crowd the text.
+    @ScaledMetric(relativeTo: .subheadline) private var cornerRadius: CGFloat = 27
+
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+    }
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -65,7 +87,7 @@ private struct ToastBackground<Content: View>: View {
         #if os(iOS)
         if #available(iOS 26.0, *) {
             content
-                .glassEffect(.regular, in: Capsule())
+                .glassEffect(.regular, in: shape)
         } else {
             legacyContent
         }
@@ -76,7 +98,7 @@ private struct ToastBackground<Content: View>: View {
 
     private var legacyContent: some View {
         content
-            .background(Capsule().fill(legacyColor))
+            .background(shape.fill(legacyColor))
     }
 }
 
