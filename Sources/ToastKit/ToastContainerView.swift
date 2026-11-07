@@ -33,6 +33,8 @@ struct ToastContainerView: View {
                 ToastView(item: toast)
             }
         }
+        // Keeps a Dynamic Type–scaled toast inside the screen edges.
+        .padding(.horizontal, 16)
         .animation(ToastCenter.houseAnimation, value: visibleToasts)
         .allowsHitTesting(false)
     }

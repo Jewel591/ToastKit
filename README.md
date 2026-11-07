@@ -80,8 +80,10 @@ itself contains no user-visible strings.
 - **Accessible.** Each toast posts a VoiceOver announcement; the transient
   visual alone would be missed entirely.
 - **System-preset visuals.** Dynamic Type text styles and semantic colors —
-  no hard-coded hex values or fixed point sizes. On iOS 26 and later, toast
-  capsules use system Liquid Glass; earlier iOS versions and macOS retain the
+  no hard-coded hex values or fixed point sizes. Title and subtitle wrap to
+  two lines (unlimited at accessibility sizes) inside a width cap that scales
+  with Dynamic Type, so localized copy is not cut mid-sentence. On iOS 26 and
+  later, toasts use system Liquid Glass; earlier iOS versions and macOS retain the
   semantic system background.
 
 ## Testing
